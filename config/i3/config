@@ -1,37 +1,66 @@
-# i3 config - Catppuccin Mocha. Mod = Alt
+# i3 config – Catppuccin Mocha. Mod = Alt
 set $mod Mod1
 font pango:monospace 10
 
+# ── Catppuccin Mocha palette ──────────────────────────────────────────────────
 set $base    #1e1e2e
 set $mantle  #181825
 set $surface #313244
 set $text    #cdd6f4
 set $subtext #a6adc8
+set $accent  #89b4fa
 set $blue    #89b4fa
 set $mauve   #cba6f7
 set $red     #f38ba8
 
-client.focused          $blue    $base   $text    $mauve   $blue
-client.focused_inactive $surface $base   $subtext $surface $surface
-client.unfocused        $surface $mantle $subtext $surface $surface
-client.urgent           $red     $base   $red     $red     $red
+# ── Window colours ────────────────────────────────────────────────────────────
+#                       border    bg       text     indicator child_border
+client.focused          $accent   $base    $text    $mauve    $accent
+client.focused_inactive $surface  $base    $subtext $surface  $surface
+client.unfocused        $surface  $mantle  $subtext $surface  $surface
+client.urgent           $red      $base    $red     $red      $red
 
+# ── Gaps & borders ───────────────────────────────────────────────────────────
 default_border pixel 2
 gaps inner 8
 gaps outer 2
 
 floating_modifier $mod
 
-# Apps
-bindsym $mod+Return exec kitty
+# ── Applications ─────────────────────────────────────────────────────────────
+bindsym $mod+Return exec env -u WAYLAND_DISPLAY LIBGL_ALWAYS_SOFTWARE=1 kitty
 bindsym $mod+d exec env -u WAYLAND_DISPLAY rofi -show drun -theme ~/.config/rofi/catppuccin.rasi
 bindsym $mod+Shift+q kill
 
-# Screenshots
+# ── Screenshots ───────────────────────────────────────────────────────────────
 bindsym Print exec --no-startup-id scrot ~/dev-desktop/screenshots/%Y%m%d_%H%M%S.png
 bindsym $mod+Shift+s exec --no-startup-id scrot ~/dev-desktop/screenshots/%Y%m%d_%H%M%S.png
 
-# Focus and move windows
+# ── Productivity keybinds ─────────────────────────────────────────────────────
+# Pomodoro toggle
+bindsym $mod+p exec --no-startup-id ~/.local/bin/pomodoro.sh toggle
+# Quick notes (~/notes.md in vim inside kitty)
+bindsym $mod+n exec --no-startup-id env -u WAYLAND_DISPLAY LIBGL_ALWAYS_SOFTWARE=1 kitty -e vim ~/notes.md
+# Wallpaper + dynamic theming
+bindsym $mod+w exec --no-startup-id ~/.local/bin/wallpaper-theme.sh
+
+# ── Dropdown scratchpad terminal ──────────────────────────────────────────────
+# Mark it on open so it lands in scratchpad regardless of workspace
+for_window [instance="scratchpad"] floating enable, resize set 900 500, move position center, move scratchpad
+exec --no-startup-id env -u WAYLAND_DISPLAY LIBGL_ALWAYS_SOFTWARE=1 kitty --name scratchpad
+bindsym $mod+grave [instance="scratchpad"] scratchpad show
+bindsym $mod+Shift+grave move scratchpad
+
+# ── Workspace / layout assignment ────────────────────────────────────────────
+assign [class="(?i)(firefox|chromium|google-chrome|brave-browser)"] workspace number 2
+assign [class="(?i)(code|vscodium)"] workspace number 3
+# Regular kitty windows (not the scratchpad) → workspace 1
+assign [class="(?i)^kitty$" instance="^(?!scratchpad).*$"] workspace number 1
+
+# Set workspace 3 to tabbed layout on startup, then return to 1
+exec --no-startup-id i3-msg "workspace number 3; layout tabbed; workspace number 1"
+
+# ── Focus / move ──────────────────────────────────────────────────────────────
 bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
@@ -41,13 +70,13 @@ bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
 
-# Layout
+# ── Layout ────────────────────────────────────────────────────────────────────
 bindsym $mod+b split h
 bindsym $mod+v split v
 bindsym $mod+f fullscreen toggle
 bindsym $mod+Shift+space floating toggle
 
-# Workspaces
+# ── Workspaces ────────────────────────────────────────────────────────────────
 bindsym $mod+1 workspace number 1
 bindsym $mod+2 workspace number 2
 bindsym $mod+3 workspace number 3
@@ -59,18 +88,21 @@ bindsym $mod+Shift+3 move container to workspace number 3
 bindsym $mod+Shift+4 move container to workspace number 4
 bindsym $mod+Shift+5 move container to workspace number 5
 
-# Reload / restart
+# ── Reload / restart ─────────────────────────────────────────────────────────
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 
+# ── Status bar ────────────────────────────────────────────────────────────────
 bar {
     status_command ~/.local/bin/statusbar.sh
     position top
+    # Enable click events passthrough
+    i3bar_command i3bar
     colors {
         background $base
         statusline $text
         separator  $surface
-        focused_workspace  $blue    $blue    $base
+        focused_workspace  $accent  $accent  $base
         active_workspace   $surface $surface $text
         inactive_workspace $base    $base    $subtext
         urgent_workspace   $red     $red     $base
