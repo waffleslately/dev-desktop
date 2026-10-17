@@ -1,0 +1,78 @@
+# i3 config - Catppuccin Mocha. Mod = Alt
+set $mod Mod1
+font pango:monospace 10
+
+set $base    #1e1e2e
+set $mantle  #181825
+set $surface #313244
+set $text    #cdd6f4
+set $subtext #a6adc8
+set $blue    #89b4fa
+set $mauve   #cba6f7
+set $red     #f38ba8
+
+client.focused          $blue    $base   $text    $mauve   $blue
+client.focused_inactive $surface $base   $subtext $surface $surface
+client.unfocused        $surface $mantle $subtext $surface $surface
+client.urgent           $red     $base   $red     $red     $red
+
+default_border pixel 2
+gaps inner 8
+gaps outer 2
+
+floating_modifier $mod
+
+# Apps
+bindsym $mod+Return exec kitty
+bindsym $mod+d exec env -u WAYLAND_DISPLAY rofi -show drun -theme ~/.config/rofi/catppuccin.rasi
+bindsym $mod+Shift+q kill
+
+# Screenshots
+bindsym Print exec --no-startup-id scrot ~/dev-desktop/screenshots/%Y%m%d_%H%M%S.png
+bindsym $mod+Shift+s exec --no-startup-id scrot ~/dev-desktop/screenshots/%Y%m%d_%H%M%S.png
+
+# Focus and move windows
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# Layout
+bindsym $mod+b split h
+bindsym $mod+v split v
+bindsym $mod+f fullscreen toggle
+bindsym $mod+Shift+space floating toggle
+
+# Workspaces
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+
+# Reload / restart
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+
+bar {
+    status_command ~/.local/bin/statusbar.sh
+    position top
+    colors {
+        background $base
+        statusline $text
+        separator  $surface
+        focused_workspace  $blue    $blue    $base
+        active_workspace   $surface $surface $text
+        inactive_workspace $base    $base    $subtext
+        urgent_workspace   $red     $red     $base
+    }
+}
