@@ -46,7 +46,7 @@ DISPLAY=:1 i3
 | `config/kitty/kitty.conf` | Terminal – Catppuccin Mocha colours |
 | `config/rofi/catppuccin.rasi` | Launcher – Catppuccin Mocha theme |
 | `scripts/sysinfo.sh` | Print CPU, RAM and battery (or disk); supports `cpu\|ram\|bat` arg |
-| `scripts/statusbar.sh` | i3bar JSON protocol with click events and SIGUSR1 wakeup |
+| `scripts/statusbar.sh` | i3bar JSON protocol with click events |
 | `scripts/pomodoro.sh` | 25 min work / 5 min break pomodoro timer |
 | `scripts/wallpaper-theme.sh` | Set wallpaper, extract dominant colour, rewrite accent |
 | `install.sh` | One-command install |
@@ -107,9 +107,7 @@ Each block is named; clicking:
 - **RAM** → opens `free -h` in a new Kitty window
 - **Pomodoro / Clock** → toggles the pomodoro timer
 
-The bar also wakes up instantly via `SIGUSR1` (sent by `pomodoro.sh` on each state
-change) instead of always polling every 2 seconds. CPU, RAM and battery blocks are
-colour-coded (green → yellow → red as load rises).
+CPU, RAM and battery blocks are colour-coded, and the bar refreshes about once per second.
 
 ### Pomodoro timer (`Mod+p`)
 
@@ -151,4 +149,4 @@ kitty and rofi) whenever you change wallpaper.
 subsequent calls are instant), `free` for RAM, and `/sys/class/power_supply/BAT*`
 for battery, falling back to `df /` disk usage. Accepts `cpu`, `ram` or `bat`
 as an argument to print only one metric. `statusbar.sh` calls the same calculations
-inline and runs them in a 2-second loop, waking early on `SIGUSR1`.
+inline and runs them in a 2-second loop.
